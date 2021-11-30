@@ -12,7 +12,9 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+    public Text playerName;//new
+    public Text highScoreText;//new
+
     private bool m_Started = false;
     private int m_Points;
     
@@ -24,6 +26,9 @@ public class MainManager : MonoBehaviour
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
+
+        highScoreText.text = "High Score: " + ScoreHandler.Instance.highScore
+            + " Name: " + ScoreHandler.Instance.bestPlayerName;
         
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
@@ -35,6 +40,11 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+
+        if(DataManager.Instance != null)
+        {
+            playerName.text = "Player: " + DataManager.Instance.playerName;
         }
     }
 
@@ -55,6 +65,8 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            ScoreHandler.Instance.ValidateHighScore(m_Points);
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -72,5 +84,11 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+
+    }
+
+    public void StartNew()
+    {
+        SceneManager.LoadScene(0);
     }
 }
